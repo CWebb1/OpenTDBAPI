@@ -1,0 +1,20 @@
+{
+  "name": "opentdbapi",
+  "version": "1.0.0",
+  "description": "Intro to App Dev Concepts OpenTDB Api for the second half of the assignment",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
