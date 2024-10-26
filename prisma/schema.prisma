@@ -12,3 +12,83 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  BASIC
+  ADMIN
+}
+
+enum Type {
+  multiple
+  boolean
+}
+
+enum Difficulty {
+  easy
+  medium
+  hard
+}
+
+model User {
+  id               Int                 @id @default(autoincrement())
+  emailAddress     String              @unique
+  firstName        String
+  lastName         String
+  password         String
+  loginAttempts    Int                 @default(0)
+  lastLoginAttempt DateTime?
+  role             Role                @default(BASIC)
+  answers          UserQuestionAnswer[]
+  scores           UserQuizScore[]
+}
+
+model Category {
+  id    Int    @id
+  name  String
+  quizzes Quiz[]
+}
+
+model Quiz {
+  id           Int       @id @default(autoincrement())
+  categoryId   Int
+  name        String
+  type        Type
+  difficulty  Difficulty
+  startDate   DateTime
+  endDate     DateTime
+  category    Category   @relation(fields: [categoryId], references: [id])
+  questions   Question[]
+  answers     UserQuestionAnswer[]
+  scores      UserQuizScore[]
+}
+
+model Question {
+  id               Int                 @id @default(autoincrement())
+  quizId          Int
+  question        String
+  correctAnswer   String
+  incorrectAnswers String[]
+  quiz            Quiz                @relation(fields: [quizId], references: [id])
+  answers         UserQuestionAnswer[]
+}
+
+model UserQuestionAnswer {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  quizId     Int
+  questionId Int
+  answer     String
+  isCorrect  Boolean
+  user       User     @relation(fields: [userId], references: [id])
+  quiz       Quiz     @relation(fields: [quizId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id])
+}
+
+model UserQuizScore {
+  id     Int   @id @default(autoincrement())
+  userId Int
+  quizId Int
+  score  Float
+  user   User  @relation(fields: [userId], references: [id])
+  quiz   Quiz  @relation(fields: [quizId], references: [id])
+}
