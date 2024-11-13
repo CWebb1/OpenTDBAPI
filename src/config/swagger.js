@@ -13,6 +13,10 @@ const options = {
         url: 'http://localhost:3000',
         description: 'Development server',
       },
+      {
+        url: 'https://opentdbapi.onrender.com',
+        description: 'Production server',
+      },
     ],
   },
   apis: ['./src/routes/*.js'],
