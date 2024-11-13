@@ -112,5 +112,5 @@ npm run format
 
 Below are the Entity Relationship Diagrams (ERDs) for the REST APIs:
 
-![ERD-Diagram](https://github.com/CWebb1/your-choice-REST-API/blob/main/prisma-erd.svg)
+![ERD-Diagram](https://github.com/CWebb1/OpenTDBAPI/blob/main/prisma-erd.svg)
 
