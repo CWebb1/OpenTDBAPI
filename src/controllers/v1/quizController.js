@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
-import { quizSchema, quizAnswerSchema } from '../validation/schemas.js';
-import { fetchQuestions } from '../services/opentdbService.js';
+import { PrismaClient } from "@prisma/client";
+import { quizSchema, quizAnswerSchema } from "../../validation/schemas.js";
+import { fetchQuestions } from "../../services/opentdbService.js";
 
 const prisma = new PrismaClient();
 
@@ -25,19 +25,21 @@ const createQuiz = async (req, res) => {
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         questions: {
-          create: questions
-        }
+          create: questions,
+        },
       },
       include: {
-        questions: true
-      }
+        questions: true,
+      },
     });
 
     res.status(201).json(quiz);
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
-        return res.status(400).json({ error: "Quiz with this name already exists" });
+        return res
+          .status(400)
+          .json({ error: "Quiz with this name already exists" });
       } else if (error.code === "P2003") {
         return res.status(400).json({ error: "Invalid reference ID provided" });
       }
@@ -50,8 +52,8 @@ const getAllQuizzes = async (req, res) => {
   try {
     const quizzes = await prisma.quiz.findMany({
       include: {
-        category: true
-      }
+        category: true,
+      },
     });
     res.status(200).json(quizzes);
   } catch (error) {
@@ -65,8 +67,8 @@ const getQuizById = async (req, res) => {
       where: { id: parseInt(req.params.id) },
       include: {
         category: true,
-        questions: true
-      }
+        questions: true,
+      },
     });
 
     if (!quiz) {
@@ -96,8 +98,8 @@ const updateQuiz = async (req, res) => {
         type,
         difficulty,
         startDate: new Date(startDate),
-        endDate: new Date(endDate)
-      }
+        endDate: new Date(endDate),
+      },
     });
 
     res.status(200).json(quiz);
@@ -109,11 +111,11 @@ const updateQuiz = async (req, res) => {
 const deleteQuiz = async (req, res) => {
   try {
     await prisma.quiz.delete({
-      where: { id: parseInt(req.params.id) }
+      where: { id: parseInt(req.params.id) },
     });
 
     res.status(200).json({
-      message: "Quiz and all associated data deleted successfully"
+      message: "Quiz and all associated data deleted successfully",
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -130,7 +132,7 @@ const playQuiz = async (req, res) => {
 
     const quiz = await prisma.quiz.findUnique({
       where: { id: parseInt(req.params.id) },
-      include: { questions: true }
+      include: { questions: true },
     });
 
     if (!quiz) {
@@ -146,9 +148,10 @@ const playQuiz = async (req, res) => {
     let score = 0;
 
     // Process each answer
-    const userAnswers = answers.map(answer => {
-      const question = quiz.questions.find(q => q.id === answer.questionId);
-      const isCorrect = question.correctAnswer.toLowerCase() === answer.answer.toLowerCase();
+    const userAnswers = answers.map((answer) => {
+      const question = quiz.questions.find((q) => q.id === answer.questionId);
+      const isCorrect =
+        question.correctAnswer.toLowerCase() === answer.answer.toLowerCase();
       if (isCorrect) score++;
 
       return {
@@ -156,28 +159,28 @@ const playQuiz = async (req, res) => {
         quizId: quiz.id,
         questionId: answer.questionId,
         answer: answer.answer,
-        isCorrect
+        isCorrect,
       };
     });
 
     // Save answers and score in transaction
     await prisma.$transaction([
       prisma.userQuestionAnswer.createMany({
-        data: userAnswers
+        data: userAnswers,
       }),
       prisma.userQuizScore.create({
         data: {
           userId,
           quizId: quiz.id,
-          score: (score / 10) * 100
-        }
-      })
+          score: (score / 10) * 100,
+        },
+      }),
     ]);
 
     res.status(200).json({
       score: (score / 10) * 100,
       correctAnswers: score,
-      totalQuestions: 10
+      totalQuestions: 10,
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -190,5 +193,5 @@ export {
   getQuizById,
   updateQuiz,
   deleteQuiz,
-  playQuiz
+  playQuiz,
 };

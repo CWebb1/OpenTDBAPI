@@ -1,6 +1,6 @@
-import express from 'express';
-import { adminMiddleware } from '../middleware/auth.js';
-import getAllUsers from '../controllers/userController.js';
+import express from "express";
+import { adminMiddleware } from "../../middleware/auth.js";
+import getAllUsers from "../../controllers/v1/userController.js";
 
 const router = express.Router();
 
@@ -50,6 +50,6 @@ const router = express.Router();
  *       403:
  *         description: Admin access required
  */
-router.get('/', adminMiddleware, getAllUsers);
+router.get("/", adminMiddleware, getAllUsers);
 
 export default router;

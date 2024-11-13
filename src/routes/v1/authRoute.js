@@ -1,10 +1,10 @@
-import express from 'express';
-import { register, login } from '../controllers/authController.js';
+import express from "express";
+import { register, login } from "../../controllers/v1/authController.js";
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
+router.post("/register", register);
+router.post("/login", login);
 
 /**
  * @swagger
@@ -59,7 +59,7 @@ router.post('/login', login);
  *       409:
  *         description: Email already registered
  */
-router.post('/register', register);
+router.post("/register", register);
 
 /**
  * @swagger
@@ -111,6 +111,6 @@ router.post('/register', register);
  *       429:
  *         description: Too many login attempts
  */
-router.post('/login', login);
+router.post("/login", login);
 
-export default router; 
+export default router;

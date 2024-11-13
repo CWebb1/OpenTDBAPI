@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -12,8 +12,8 @@ const getAllUsers = async (req, res) => {
         lastName: true,
         role: true,
         loginAttempts: true,
-        lastLoginAttempt: true
-      }
+        lastLoginAttempt: true,
+      },
     });
     res.status(200).json(users);
   } catch (error) {

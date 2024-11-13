@@ -1,25 +1,25 @@
-import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerJsDoc from "swagger-jsdoc";
 
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'OpenTDB Quiz API',
-      version: '1.0.0',
-      description: 'API for quiz management using OpenTDB',
+      title: "OpenTDB Quiz API",
+      version: "1.0.0",
+      description: "API for quiz management using OpenTDB",
     },
     servers: [
       {
-        url: 'http://localhost:3000',
-        description: 'Development server',
+        url: "http://localhost:3000",
+        description: "Development server",
       },
       {
-        url: 'https://opentdbapi.onrender.com',
-        description: 'Production server',
+        url: "https://opentdbapi.onrender.com",
+        description: "Production server",
       },
     ],
   },
-  apis: ['./src/routes/*.js'],
+  apis: ["./src/routes/*.js"],
 };
 
 export default swaggerJsDoc(options);

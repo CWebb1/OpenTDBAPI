@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { registerSchema, loginSchema } from '../validation/schemas.js';
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { registerSchema, loginSchema } from "../../validation/schemas.js";
 
 const prisma = new PrismaClient();
 
@@ -14,11 +14,11 @@ const register = async (req, res) => {
 
     const { emailAddress, firstName, lastName, password } = req.body;
     const existingUser = await prisma.user.findUnique({
-      where: { emailAddress }
+      where: { emailAddress },
     });
 
     if (existingUser) {
-      return res.status(409).json({ error: 'Email already registered' });
+      return res.status(409).json({ error: "Email already registered" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -28,12 +28,12 @@ const register = async (req, res) => {
         firstName,
         lastName,
         password: hashedPassword,
-        role: 'BASIC'
-      }
+        role: "BASIC",
+      },
     });
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '24h'
+      expiresIn: "24h",
     });
 
     res.status(201).json({ token });
@@ -51,17 +51,21 @@ const login = async (req, res) => {
 
     const { emailAddress, password } = req.body;
     const user = await prisma.user.findUnique({
-      where: { emailAddress }
+      where: { emailAddress },
     });
 
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     if (user.loginAttempts >= 3 && user.lastLoginAttempt) {
-      const lockoutTime = new Date(user.lastLoginAttempt.getTime() + 15 * 60000);
+      const lockoutTime = new Date(
+        user.lastLoginAttempt.getTime() + 15 * 60000
+      );
       if (lockoutTime > new Date()) {
-        return res.status(429).json({ error: 'Account temporarily locked. Try again later.' });
+        return res
+          .status(429)
+          .json({ error: "Account temporarily locked. Try again later." });
       }
     }
 
@@ -71,22 +75,22 @@ const login = async (req, res) => {
         where: { id: user.id },
         data: {
           loginAttempts: user.loginAttempts + 1,
-          lastLoginAttempt: new Date()
-        }
+          lastLoginAttempt: new Date(),
+        },
       });
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     await prisma.user.update({
       where: { id: user.id },
       data: {
         loginAttempts: 0,
-        lastLoginAttempt: null
-      }
+        lastLoginAttempt: null,
+      },
     });
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '24h'
+      expiresIn: "24h",
     });
 
     res.status(200).json({ token });

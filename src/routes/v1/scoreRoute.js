@@ -1,5 +1,5 @@
-import express from 'express';
-import { getAllScores } from '../controllers/scoreController.js';
+import express from "express";
+import { getAllScores } from "../../controllers/v1/scoreController.js";
 
 const router = express.Router();
 
@@ -55,6 +55,6 @@ const router = express.Router();
  *       401:
  *         description: Unauthorized
  */
-router.get('/', getAllScores);
+router.get("/", getAllScores);
 
 export default router;

@@ -1,15 +1,15 @@
-import Joi from 'joi';
+import Joi from "joi";
 
 const registerSchema = Joi.object({
   emailAddress: Joi.string().email().required(),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
-  password: Joi.string().min(6).required()
+  password: Joi.string().min(6).required(),
 });
 
 const loginSchema = Joi.object({
   emailAddress: Joi.string().email().required(),
-  password: Joi.string().required()
+  password: Joi.string().required(),
 });
 
 const quizSchema = Joi.object({
@@ -19,15 +19,17 @@ const quizSchema = Joi.object({
     .pattern(/^[a-zA-Z\s]+$/)
     .required(),
   categoryId: Joi.number().required(),
-  type: Joi.string().valid('multiple', 'boolean').required(),
-  difficulty: Joi.string().valid('easy', 'medium', 'hard').required(),
-  startDate: Joi.date().min('now').required(),
+  type: Joi.string().valid("multiple", "boolean").required(),
+  difficulty: Joi.string().valid("easy", "medium", "hard").required(),
+  startDate: Joi.date().min("now").required(),
   endDate: Joi.date()
-    .greater(Joi.ref('startDate'))
-    .max(Joi.ref('startDate', {
-      adjust: date => date.setDate(date.getDate() + 5)
-    }))
-    .required()
+    .greater(Joi.ref("startDate"))
+    .max(
+      Joi.ref("startDate", {
+        adjust: (date) => date.setDate(date.getDate() + 5),
+      }),
+    )
+    .required(),
 });
 
 const quizAnswerSchema = Joi.object({
@@ -35,16 +37,11 @@ const quizAnswerSchema = Joi.object({
     .items(
       Joi.object({
         questionId: Joi.number().required(),
-        answer: Joi.string().required()
-      })
+        answer: Joi.string().required(),
+      }),
     )
     .length(10)
-    .required()
+    .required(),
 });
 
-export {
-  registerSchema,
-  loginSchema,
-  quizSchema,
-  quizAnswerSchema
-};
+export { registerSchema, loginSchema, quizSchema, quizAnswerSchema };
