@@ -1,20 +1,38 @@
 {
-  "name": "opentdbapi",
+  "name": "opentdb-rest-api",
   "version": "1.0.0",
-  "description": "Intro to App Dev Concepts OpenTDB Api for the second half of the assignment",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "migrate": "prisma migrate dev",
+    "reset": "prisma migrate reset",
+    "seed": "node prisma/seed.js",
+    "studio": "prisma studio",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "type": "module",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "express": "^4.21.1"
+    "@prisma/client": "^5.8.0",
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "joi": "^17.11.0",
+    "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^3.3.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "@types/node": "^20.10.6",
+    "eslint": "^8.56.0",
+    "nodemon": "^3.0.2",
+    "prettier": "^3.1.1",
+    "prisma": "^5.8.0"
   }
 }

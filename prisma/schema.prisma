@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -49,46 +43,50 @@ model Category {
 }
 
 model Quiz {
-  id           Int       @id @default(autoincrement())
+  id           Int                 @id @default(autoincrement())
+  category     Category            @relation(fields: [categoryId], references: [id])
   categoryId   Int
-  name        String
-  type        Type
-  difficulty  Difficulty
-  startDate   DateTime
-  endDate     DateTime
-  category    Category   @relation(fields: [categoryId], references: [id])
-  questions   Question[]
-  answers     UserQuestionAnswer[]
-  scores      UserQuizScore[]
+  name         String
+  type         Type
+  difficulty   Difficulty
+  startDate    DateTime
+  endDate      DateTime
+  questions    Question[]
+  answers      UserQuestionAnswer[]
+  scores       UserQuizScore[]
 }
 
 model Question {
   id               Int                 @id @default(autoincrement())
-  quizId          Int
-  question        String
-  correctAnswer   String
+  quiz             Quiz                @relation(fields: [quizId], references: [id])
+  quizId           Int
+  question         String
+  correctAnswer    String
   incorrectAnswers String[]
-  quiz            Quiz                @relation(fields: [quizId], references: [id])
-  answers         UserQuestionAnswer[]
+  answers          UserQuestionAnswer[]
 }
 
 model UserQuestionAnswer {
   id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
   userId     Int
+  quiz       Quiz     @relation(fields: [quizId], references: [id])
   quizId     Int
+  question   Question @relation(fields: [questionId], references: [id])
   questionId Int
   answer     String
   isCorrect  Boolean
-  user       User     @relation(fields: [userId], references: [id])
-  quiz       Quiz     @relation(fields: [quizId], references: [id])
-  question   Question @relation(fields: [questionId], references: [id])
+
+  @@unique([userId, quizId, questionId])
 }
 
 model UserQuizScore {
   id     Int   @id @default(autoincrement())
+  user   User  @relation(fields: [userId], references: [id])
   userId Int
+  quiz   Quiz  @relation(fields: [quizId], references: [id])
   quizId Int
   score  Float
-  user   User  @relation(fields: [userId], references: [id])
-  quiz   Quiz  @relation(fields: [quizId], references: [id])
+
+  @@unique([userId, quizId])
 }

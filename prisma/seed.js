@@ -1,74 +1,108 @@
-// prisma/seed.js
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
-
 const prisma = new PrismaClient();
 
-// Initial users required by the project specifications
-const users = [
-  // 2 ADMIN users
-  {
-    emailAddress: 'admin1@example.com',
-    firstName: 'Admin',
-    lastName: 'One',
-    password: 'admin123',
-    role: 'ADMIN'
-  },
-  {
-    emailAddress: 'admin2@example.com',
-    firstName: 'Admin',
-    lastName: 'Two',
-    password: 'admin123',
-    role: 'ADMIN'
-  },
-  // 3 BASIC users
-  {
-    emailAddress: 'user1@example.com',
-    firstName: 'User',
-    lastName: 'One',
-    password: 'user123',
-    role: 'BASIC'
-  },
-  {
-    emailAddress: 'user2@example.com',
-    firstName: 'User',
-    lastName: 'Two',
-    password: 'user123',
-    role: 'BASIC'
-  },
-  {
-    emailAddress: 'user3@example.com',
-    firstName: 'User',
-    lastName: 'Three',
-    password: 'user123',
-    role: 'BASIC'
-  }
-];
+async function seed() {
+  try {
+    console.log('Starting database seed...');
 
-async function main() {
-  console.log('Starting to seed database...');
-  
-  for (const user of users) {
-    // Hash the password before storing
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    
-    // Create the user in the database
-    await prisma.user.create({
-      data: {
-        ...user,
-        password: hashedPassword
-      }
+    // Clear existing data
+    console.log('Clearing existing data...');
+    await prisma.userQuestionAnswer.deleteMany({});
+    await prisma.userQuizScore.deleteMany({});
+    await prisma.question.deleteMany({});
+    await prisma.quiz.deleteMany({});
+    await prisma.category.deleteMany({});
+    await prisma.user.deleteMany({});
+
+    // Seed categories
+    console.log('Seeding categories...');
+    await prisma.category.createMany({
+      data: categories
     });
+
+    // Seed users
+    console.log('Seeding users...');
+    const hashedUsers = await Promise.all(
+      users.map(async (user) => ({
+        ...user,
+        password: await bcrypt.hash(user.password, 10)
+      }))
+    );
+
+    await prisma.user.createMany({
+      data: hashedUsers
+    });
+
+    // Create some sample quizzes
+    console.log('Creating sample quizzes...');
+    const now = new Date();
+    const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    
+    const sampleQuizzes = [
+      {
+        name: 'General Knowledge Quiz',
+        categoryId: 9,
+        type: 'multiple',
+        difficulty: 'medium',
+        startDate: now,
+        endDate: oneWeekFromNow,
+        questions: {
+          create: [
+            {
+              question: 'What is the capital of France?',
+              correctAnswer: 'Paris',
+              incorrectAnswers: ['London', 'Berlin', 'Madrid']
+            },
+            {
+              question: 'Who painted the Mona Lisa?',
+              correctAnswer: 'Leonardo da Vinci',
+              incorrectAnswers: ['Pablo Picasso', 'Vincent van Gogh', 'Michelangelo']
+            }
+          ]
+        }
+      },
+      {
+        name: 'Computer Science Basics',
+        categoryId: 18,
+        type: 'multiple',
+        difficulty: 'easy',
+        startDate: now,
+        endDate: oneWeekFromNow,
+        questions: {
+          create: [
+            {
+              question: 'What does CPU stand for?',
+              correctAnswer: 'Central Processing Unit',
+              incorrectAnswers: ['Central Program Utility', 'Computer Personal Unit', 'Central Process Unit']
+            },
+            {
+              question: 'Which programming language is known as the "language of the web"?',
+              correctAnswer: 'JavaScript',
+              incorrectAnswers: ['Python', 'Java', 'C++']
+            }
+          ]
+        }
+      }
+    ];
+
+    for (const quiz of sampleQuizzes) {
+      await prisma.quiz.create({
+        data: quiz
+      });
+    }
+
+    console.log('Database seeding completed successfully!');
+  } catch (error) {
+    console.error('Error seeding database:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
   }
-  
-  console.log('Database seeding completed');
 }
 
-main()
-  .catch((e) => {
-    console.error('Error seeding database:', e);
+seed()
+  .catch((error) => {
+    console.error(error);
     process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
   });
